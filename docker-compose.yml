@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  payment-gateway:
+    build: ./actuator-example-spring
+    container_name: payment-gateway
+    ports:
+      - "8082:8082"
+    environment:
+      - MOCK_SERVICE_HOST=payment-provider-mock
+    depends_on:
+      - provider-payment-mock
+      - prometheus
+
+  provider-payment-mock:
+    build: ./payment-provider-mock
+    container_name: provider-payment-mock
+    ports:
+      - "8081:8081"
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus

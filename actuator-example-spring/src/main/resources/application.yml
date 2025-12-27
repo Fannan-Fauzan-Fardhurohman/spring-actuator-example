@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: payment-gateway
+  security:
+    user:
+      name: admin
+      password: password
+server:
+  port: 8082
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*" # Expose all endpoints for demo purposes. In prod, be selective.
+  endpoint:
+    health:
+      show-details: always
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            requests: true # Enable histogram for http server requests to calculate percentiles
